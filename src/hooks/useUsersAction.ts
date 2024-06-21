@@ -1,4 +1,10 @@
-import { addNewUser, deleteUserById, type UserId } from "../store/users/slice";
+import {
+	addNewUser,
+	deleteUserById,
+	modifyUser,
+	type UserId,
+	type UserWithId,
+} from "../store/users/slice";
 import { useAppDispatch } from "./store";
 
 export default function useUsersAction() {
@@ -16,5 +22,9 @@ export default function useUsersAction() {
 		dispatch(deleteUserById(id));
 	};
 
-	return { removeUser, addUser };
+	const editUser = (user: UserWithId) => {
+		dispatch(modifyUser(user));
+	};
+
+	return { removeUser, addUser, editUser };
 }

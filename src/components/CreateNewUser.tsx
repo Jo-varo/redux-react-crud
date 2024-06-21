@@ -1,9 +1,18 @@
 import { Badge, Button, Card, TextInput, Title } from "@tremor/react";
 import { useState } from "react";
 import useUsersAction from "../hooks/useUsersAction";
+import type { UserWithId } from "../store/users/slice";
 
-export default function CreateNewUser() {
-	const { addUser } = useUsersAction();
+interface Props {
+	userBeingEdited: UserWithId | null;
+	setUserToModify: (user: UserWithId | null) => void;
+}
+
+export default function CreateNewUser({
+	userBeingEdited,
+	setUserToModify,
+}: Props) {
+	const { addUser, editUser } = useUsersAction();
 	const [result, setResult] = useState<"ok" | "ko" | null>(null);
 
 	const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
@@ -12,29 +21,47 @@ export default function CreateNewUser() {
 		const form = evt.currentTarget;
 		const formData = new FormData(form);
 
-		const name = formData.get("name") as string;
-		const email = formData.get("email") as string;
-		const github = formData.get("github") as string;
+		const name = (formData.get("name") as string) || userBeingEdited?.name;
+		const email = (formData.get("email") as string) || userBeingEdited?.email;
+		const github =
+			(formData.get("github") as string) || userBeingEdited?.github;
 
 		if (!name || !email || !github) {
 			return setResult("ko");
 		}
 
-		addUser({ name, email, github });
+		if (userBeingEdited) {
+			editUser({ ...userBeingEdited, email, github, name });
+			setUserToModify(null);
+		} else {
+			addUser({ name, email, github });
+		}
+
 		setResult("ok");
 		form.reset();
 	};
 
 	return (
 		<Card className="mt-4">
-			<Title>Create new user</Title>
+			<Title>{userBeingEdited ? "Edit" : "Create new"} user</Title>
 			<form onSubmit={handleSubmit}>
-				<TextInput placeholder="Nombre" name="name" />
-				<TextInput placeholder="Email" name="email" />
-				<TextInput placeholder="Usuario de Github" name="github" />
+				<TextInput
+					placeholder={userBeingEdited ? userBeingEdited.name : "Nombre"}
+					name="name"
+				/>
+				<TextInput
+					placeholder={userBeingEdited ? userBeingEdited.email : "Email"}
+					name="email"
+				/>
+				<TextInput
+					placeholder={
+						userBeingEdited ? userBeingEdited.github : "Usuario de Github"
+					}
+					name="github"
+				/>
 				<div>
 					<Button type="submit" className="mt-4">
-						Crear usuario
+						{userBeingEdited ? "Editar" : "Crear"} usuario
 					</Button>
 					<span className="inline-block ml-2">
 						{result === "ok" && <Badge color="green">Guardado</Badge>}

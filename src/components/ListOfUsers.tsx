@@ -11,8 +11,13 @@ import {
 } from "@tremor/react";
 import { useAppSelector } from "../hooks/store";
 import useUsersAction from "../hooks/useUsersAction";
+import type { UserWithId } from "../store/users/slice";
 
-export function ListOfUsers() {
+interface Props {
+	setUserToModify: (user: UserWithId) => void;
+}
+
+export function ListOfUsers({ setUserToModify }: Props) {
 	const users = useAppSelector((state) => state.users);
 	const { removeUser } = useUsersAction();
 
@@ -45,7 +50,7 @@ export function ListOfUsers() {
 							</TableCell>
 							<TableCell>{item.email}</TableCell>
 							<TableCell>
-								<button type="button">
+								<button type="button" onClick={() => setUserToModify(item)}>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										fill="none"
