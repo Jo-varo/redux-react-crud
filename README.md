@@ -1,6 +1,6 @@
 # Redux ReactTS
 
-This project the following packages:
+This project uses the following packages:
 - React-Redux
 - Redux Toolkit
 - Tremor React UI (TailwindCSS, HeadlessUI, RemixIcon)
